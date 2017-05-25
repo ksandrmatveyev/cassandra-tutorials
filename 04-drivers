@@ -1,0 +1,85 @@
+# Drivers
+ - API is similr between languages
+ - Policies are the same (load balancing, rebalancing, etc.)
+
+You connect to the cluster, not to a single server
+
+# Python Example
+ - create a cluster object
+ - use the cluster to obtain a session
+ - session manages connections to the cluster (maintaing connections to the cluster itself and keeping track of things that are happening. It is caled GOSSIP)
+
+'''
+# one entity which can be multiple servers, but it is a single cluster according to our application
+from cassandra.cluster import Cluster
+cluster = Cluster(protocol_version = 3) 
+session = cluster.connect('killrvideo')
+'''
+
+INSERT
+'''
+session.execute("""
+INSERT INTO table ()
+VALUES ()
+""")
+'''
+
+SELECT
+'''
+rsult = session.execute("SELECT * FROM table WHERE userid=")[0]
+print result.firstname, reult.lastname, result.email
+'''
+
+
+
+# Pyrhon driver task
+'''
+from cassandra.cluster import Cluster
+cluster = Cluster(protocol_version = 3)
+session = cluster.connect('killrvideo')
+'''
+
+'''
+result = session.execute("SELECT * FROM videos_by_tag")
+for val in result:
+    print val[0]
+'''
+
+session.execute() returns a sequence of rows (tuples), which you can further index into to get cell values. Try executing the following:
+
+'''
+print('{0:12} {1:40} {2:5}'.format('Tag', 'ID', 'Title'))
+for val in session.execute("select * from videos_by_tag"):
+    print('{0:12} {1:40} {2:5}'.format(val[0], val[2], val[3]))
+'''
+
+INSERT DATA
+'''
+session.execute(
+    "INSERT INTO videos_by_tag (tag, added_date, video_id, title)" +
+    "VALUES ('cassandra', '2013-01-10', uuid(), 'Cassandra Is My Friend')")
+'''
+
+
+
+if we want to delete raw we must specify partition key and clustering columns in order. I mean if we have primary key as ((tag),date,uid). We must write:
+
+'''
+session.execute(
+"DELETE FROM videos_by_tag WHERE tag='datastax' AND added_date='2015-1-1'"
+)
+'''
+Above is not valid, because we can delete another rows
+
+'''
+session.execute(
+"DELETE FROM videos_by_tag WHERE tag='datastax' AND added_date='2015-1-1' AND video_id=4845ed97-14bd-11e5-8a40-8338255b7e34"
+)
+'''
+NOT
+'''
+session.execute(
+"DELETE FROM videos_by_tag WHERE tag='datastax' AND video_id=4845ed97-14bd-11e5-8a40-8338255b7e34"
+)
+'''
+

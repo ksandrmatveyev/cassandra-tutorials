@@ -1,0 +1,74 @@
+# clustering-columns
+ - you must first provide a partition key
+ - clustering columns can follow thereafter
+ - you can perform either equality (=) or range queries (<,>) on clustering columns
+ - all equality comparisons must come before inequality comparisons
+ - since data is stored on disk, range searches are a binary search followed by a linear read
+Example: if we have PRIMARY KEY ((state), city) - state is a partition key (group), city is a clustering columns (order)
+Always add id as clustering columns for data uniqueness
+Clustering columns - part of primary key and create uniqueness.
+
+
+# Changing default ordering
+ - clustering columns default ascending order
+ - change ordering direction via WITH CLUSTERING ORDER BY
+ - must include all columns including and up to the columns you wish to order descending
+ - for example, we exclude 'id' below and assume ASC
+
+'''
+CREATE TABLE users (
+state text,
+city text,
+name text,
+id uuid,
+PRIMARY KEY((state), city, name, id))
+WITH CLUSTERING ORDER BY (city DESC, name ASC)
+)
+'''
+
+We do the sorting order on disc before we query it
+
+# Allow Filtering
+ - ALLOW FILTERING relaxes the querying on partition key constraint
+ - you can then query on just clustering columns
+ - Causes Cassandra to scan all partitions in the table
+ - don't use it:
+   - unless you really have to
+   - best on small data sets
+   - but still, don't use it, seriously
+
+If you don't include a partition key, that means that you are now having to look at the entire cluster. If you think that a fuul table scan is bad, try full cluster scan!
+
+What benefits do Clustering columns provide?
+Reading sorted data is a matter of seeking the disk head once.
+
+Why do we add the ID field as the last clustering column of the PRIMARY KEY?
+Adding the ID first would prevent further ordering because ID values are unique
+The PRIMARY KEY as a whole must be unique
+
+# EXAMPLE
+Create a new videos_by_tag table that stores its rows having the newest videos listed first
+
+'''
+CREATE TABLE videos_by_tag (
+tag text,
+video_id uuid,
+added_date timestamp,
+title text,
+PRIMARY KEY ((tag), added_date, video_id)
+) WITH CLUSTERING ORDER BY (added_date DESC);
+''' 
+
+'''
+SELECT * FROM videos_by_tag ORDER BY added_date;
+'''
+Your query will fail. When specifying ORDER BY, you must also restrict the partition key. Change your query to restrict the partition key value to 'cassandra'.
+'''
+SELECT * FROM videos_by_tag WHERE tag='cassandra' ORDER BY added_date;
+'''
+Use everey time partition key in WHERE clause (it bettter then allowing filtering)
+'''
+SELECT *
+FROM videos_by_tag
+WHERE tag = 'cassandra' and added_date >= '2013-1-1'
+'''
