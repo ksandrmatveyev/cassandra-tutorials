@@ -1,0 +1,63 @@
+# Keyspaces
+ - top-level namespace/container
+ - Similar to a relational database schema
+ - Replication parameters required
+'''
+CREATE KEYSPACE killrvideo
+WITH REPLICATION = {
+  'class': 'SimpleStrategy',
+  'replication_factor' : 1
+};
+'''
+
+# USE
+ - Use switches between keyspaces
+
+'''
+USE killrvideo;
+'''
+
+# TABLES
+ - Keyspaces contain tables
+ - tables contains data
+
+'''
+CREATE TABLE videos (
+id uuid,
+added_date timestamp,
+title text,
+PRIMARY KEY(id)
+);
+'''
+
+# INSERT
+'''
+INSERT INTO videos (id,added_date,title)
+VALUES (1645ea59-14bd-11e5-a993-8138354b7e31,'2014-01-29','Cassandra History');
+'''
+
+# SELECT
+'''
+SELECT * FROM videos;
+'''
+
+# UUID & TIMEUUID
+## UUID
+ - unique indetifier
+ - generate via uuid()
+
+## TIMEUUID
+ - sortable
+ - generate via now()
+ If we have two exact same timestamps, we can store them separately (must be unique)
+ Cassandra - is distributed system. there is impossible to generate a sequence (like in relational DBs, when generate IDs)  
+ To avoid conflicts in auto generating IDs between nodes we use UUIDs to uniquely identify records  
+
+# COPY
+- imports/exports CSV (comma-separated values)
+- header parameter skips the first line in the file
+
+'''
+COPY table1 (column1, column2, column3) FROM 'table.csv' WITH HEADER=true;
+'''
+

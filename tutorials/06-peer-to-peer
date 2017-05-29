@@ -1,0 +1,6 @@
+Nodes are joined through peer-to-peer. Data is written throuch coordinator to amount of nodes, which dependt from replication factor. If something (cable or connection) is broken up, Cassandra decides write to which node automatically
+
+
+In a full network partition, that is, parts of the cluster are completely disconnected from the whole, only the largest group of nodes can still satisfy queries? FALSE
+
+ 

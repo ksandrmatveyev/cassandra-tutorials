@@ -1,0 +1,18 @@
+# VNODES
+We can have hot pot of cluster when one node have more ddat then another
+
+Virtual nodes allow us creates individual smaller ranges per node, and it breaks up these ranges across the cluster. Now node don't have all data (256 ranges by default)
+
+Each node has severl tokens it manages
+
+Vnodes Details:
+ - adding/removing nodes with vnodes should not make the cluter unbalanced
+ - by default each node has 256 vnodes
+ - vnodes automate token range assignment
+
+Configuration:
+ - Configure vnode settings in cassandra.yaml
+ - num_tokens
+ - value greater than one turns on vnodes
+
+comment initial_token

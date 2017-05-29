@@ -1,0 +1,5 @@
+# GOSSIP
+Keeps our cluster working well
+based on establish (epidemic) protocol that spreads trough the cluster
+
+One nide tell its info to another node, then that node's job is to tell other nodes (not synchronized)
